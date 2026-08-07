@@ -1,0 +1,37 @@
+services:
+  frontend:
+    build: ./frontend
+    container_name: employee-frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    networks:
+      - employee-network
+
+  backend:
+    build: ./backend
+    container_name: employee-backend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mysql
+    networks:
+      - employee-network
+
+  mysql:
+    image: mysql:8.0
+    container_name: employee-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: employee_db
+    volumes:
+      - employee-data:/var/lib/mysql
+    networks:
+      - employee-network
+
+volumes:
+  employee-data:
+
+networks:
+  employee-network:
