@@ -24,4 +24,5 @@ stage('Build') {
             bat 'cd backend && if exist package.json (echo package.json found) else (echo package.json missing && exit /b 1)'
         }
     }
+    }
 }
