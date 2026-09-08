@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         APP_NAME = 'EmployeeManagement'
+        DOCKER_USER = 'meghanas12345'
         IMAGE_TAG = "${BUILD_NUMBER}"
     }
 
@@ -40,16 +41,38 @@ pipeline {
         stage('Docker Build') {
             steps {
                 echo 'Building Docker images'
-                bat 'docker build -t employee-management-backend:%IMAGE_TAG% ./backend'
-                bat 'docker build -t employee-management-frontend:%IMAGE_TAG% ./frontend'
+
+                bat 'docker build -t %DOCKER_USER%/employee-management-backend:%IMAGE_TAG% ./backend'
+
+                bat 'docker build -t %DOCKER_USER%/employee-management-frontend:%IMAGE_TAG% ./frontend'
+            }
+        }
+
+        stage('Docker Push') {
+            steps {
+                echo 'Pushing Docker images to Docker Hub'
+
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-credentials',
+                    usernameVariable: 'DOCKER_USERNAME',
+                    passwordVariable: 'DOCKER_PASSWORD'
+                )]) {
+
+                    bat 'docker login -u %DOCKER_USERNAME% -p %DOCKER_PASSWORD%'
+
+                    bat 'docker push %DOCKER_USER%/employee-management-backend:%IMAGE_TAG%'
+
+                    bat 'docker push %DOCKER_USER%/employee-management-frontend:%IMAGE_TAG%'
+                }
             }
         }
     }
 
     post {
         success {
-            echo 'Week 9 CI pipeline completed successfully!'
+            echo 'Week 9 CI/CD pipeline completed successfully!'
         }
+
         failure {
             echo 'Pipeline failed. Check the console output.'
         }
