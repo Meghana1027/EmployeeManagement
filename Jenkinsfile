@@ -9,13 +9,6 @@ pipeline {
 
     stages {
 
-        stage('Checkout') {
-            steps {
-                echo 'Checking out source code from GitHub'
-                checkout scm
-            }
-        }
-
         stage('Build') {
             steps {
                 echo 'Installing backend dependencies'
@@ -58,7 +51,7 @@ pipeline {
                     passwordVariable: 'DOCKER_PASSWORD'
                 )]) {
 
-                    bat 'docker login -u %DOCKER_USERNAME% -p %DOCKER_PASSWORD%'
+                    bat 'echo %DOCKER_PASSWORD% | docker login -u %DOCKER_USERNAME% --password-stdin'
 
                     bat 'docker push %DOCKER_USER%/employee-management-backend:%IMAGE_TAG%'
 
@@ -70,7 +63,7 @@ pipeline {
 
     post {
         success {
-            echo 'Week 9 CI/CD pipeline completed successfully!'
+            echo 'Production readiness pipeline completed successfully!'
         }
 
         failure {
