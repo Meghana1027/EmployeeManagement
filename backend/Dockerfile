@@ -4,10 +4,11 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install 
+RUN npm ci --omit=dev
+RUN apk update && apk upgrade
 
 COPY . .
 
 EXPOSE 3000
 
-CMD ["node", "server.js"] 
+CMD ["node", "server.js"]
